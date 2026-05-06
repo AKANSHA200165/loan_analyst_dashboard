@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local system files
+.DS_Store
+Thumbs.db
+
+# Power BI temporary files
+*.tmp
+~$*
+
+# Large raw data files can be added manually when needed
+# dataset/raw/*.csv
+# dataset/cleaned/*.csv
+
