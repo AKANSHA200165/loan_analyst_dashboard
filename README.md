@@ -121,23 +121,13 @@ Dashboard design guide:
 
 ## Dashboard Screenshots
 
-Add exported Power BI dashboard screenshots here after building the report.
+Dashboard screenshots are included in the `screenshots` folder.
 
-```text
-screenshots/
-|-- dashboard_overview.png
-|-- credit_history_analysis.png
-|-- education_vs_approval.png
-`-- property_area_analysis.png
-```
-
-Suggested screenshot previews for GitHub:
-
-```markdown
 ![Dashboard Overview](screenshots/dashboard_overview.png)
-![Credit History Analysis](screenshots/credit_history_analysis.png)
-![Education vs Approval](screenshots/education_vs_approval.png)
-```
+
+![Dashboard Charts](screenshots/dashboard_charts.png)
+
+![Dashboard Business Insights](screenshots/dashboard_business_insights.png)
 
 ## SQL Analysis
 
