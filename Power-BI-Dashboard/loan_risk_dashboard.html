@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banking Loan Risk Dashboard</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --approved: #15803d;
+      --rejected: #dc2626;
+      --accent: #2563eb;
+      --warn: #f59e0b;
+      --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .filter {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .kpi-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    .chart {
+      min-height: 260px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 60px;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      height: 24px;
+      background: #edf2f7;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .approved {
+      background: var(--approved);
+    }
+
+    .rejected {
+      background: var(--rejected);
+    }
+
+    .single-bar {
+      height: 24px;
+      background: var(--accent);
+      border-radius: 6px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .insight {
+      border-left: 4px solid var(--accent);
+      background: #f8fafc;
+      border-radius: 6px;
+      padding: 12px;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 900px) {
+      header,
+      .grid,
+      .insights {
+        grid-template-columns: 1fr;
+      }
+
+      .filters,
+      .kpis {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 14px;
+      }
+
+      .filters,
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 95px 1fr 46px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>Banking Loan Risk Analysis Dashboard</h1>
+        <p class="subtitle">Interactive portfolio dashboard using sample loan application data</p>
+      </div>
+    </header>
+
+    <section class="filters">
+      <div class="filter">
+        <label for="genderFilter">Gender</label>
+        <select id="genderFilter"></select>
+      </div>
+      <div class="filter">
+        <label for="educationFilter">Education</label>
+        <select id="educationFilter"></select>
+      </div>
+      <div class="filter">
+        <label for="propertyFilter">Property Area</label>
+        <select id="propertyFilter"></select>
+      </div>
+      <div class="filter">
+        <label for="creditFilter">Credit History</label>
+        <select id="creditFilter"></select>
+      </div>
+      <div class="filter">
+        <label for="statusFilter">Loan Status</label>
+        <select id="statusFilter"></select>
+      </div>
+    </section>
+
+    <section class="kpis">
+      <div class="card">
+        <div class="kpi-label">Total Applicants</div>
+        <div class="kpi-value" id="totalApplicants">0</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Approval Rate</div>
+        <div class="kpi-value" id="approvalRate">0%</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Rejection Rate</div>
+        <div class="kpi-value" id="rejectionRate">0%</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Average Income</div>
+        <div class="kpi-value" id="avgIncome">0</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Average Loan Amount</div>
+        <div class="kpi-value" id="avgLoan">0</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card chart">
+        <h2>Credit History Impact</h2>
+        <div class="legend">
+          <span><span class="dot approved"></span>Approved</span>
+          <span><span class="dot rejected"></span>Rejected</span>
+        </div>
+        <div id="creditChart" class="bars"></div>
+      </div>
+
+      <div class="card chart">
+        <h2>Loan Status by Education</h2>
+        <div class="legend">
+          <span><span class="dot approved"></span>Approved</span>
+          <span><span class="dot rejected"></span>Rejected</span>
+        </div>
+        <div id="educationChart" class="bars"></div>
+      </div>
+
+      <div class="card chart">
+        <h2>Loan Status by Property Area</h2>
+        <div class="legend">
+          <span><span class="dot approved"></span>Approved</span>
+          <span><span class="dot rejected"></span>Rejected</span>
+        </div>
+        <div id="propertyChart" class="bars"></div>
+      </div>
+
+      <div class="card chart">
+        <h2>Gender-wise Loan Analysis</h2>
+        <div class="legend">
+          <span><span class="dot approved"></span>Approved</span>
+          <span><span class="dot rejected"></span>Rejected</span>
+        </div>
+        <div id="genderChart" class="bars"></div>
+      </div>
+
+      <div class="card chart">
+        <h2>Risk Category Summary</h2>
+        <div id="riskChart" class="bars"></div>
+      </div>
+
+      <div class="card chart">
+        <h2>Loan Amount by Approval Status</h2>
+        <div id="loanAmountChart" class="bars"></div>
+      </div>
+
+      <div class="card wide">
+        <h2>Business Insights</h2>
+        <div class="insights">
+          <div class="insight">Credit history has a strong impact on approval decisions. Applicants without credit history show higher rejection risk.</div>
+          <div class="insight">High loan amounts need affordability checks, especially when applicant income is low or moderate.</div>
+          <div class="insight">Risk is highest when weak credit history, higher dependents, low income, and large loan requests appear together.</div>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <h2>Sample Applicant Records</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Gender</th>
+              <th>Education</th>
+              <th>Income</th>
+              <th>Loan Amount</th>
+              <th>Credit</th>
+              <th>Status</th>
+              <th>Risk</th>
+            </tr>
+          </thead>
+          <tbody id="recordTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const loans = [
+      {id:"LP001002",gender:"Male",dependents:"0",education:"Graduate",income:5849,loan:128,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001003",gender:"Male",dependents:"1",education:"Graduate",income:4583,loan:128,credit:1,property:"Rural",status:"N"},
+      {id:"LP001005",gender:"Male",dependents:"0",education:"Graduate",income:3000,loan:66,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001006",gender:"Male",dependents:"0",education:"Not Graduate",income:2583,loan:120,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001008",gender:"Male",dependents:"0",education:"Graduate",income:6000,loan:141,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001011",gender:"Male",dependents:"2",education:"Graduate",income:5417,loan:267,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001013",gender:"Male",dependents:"0",education:"Not Graduate",income:2333,loan:95,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001014",gender:"Male",dependents:"3+",education:"Graduate",income:3036,loan:158,credit:0,property:"Semiurban",status:"N"},
+      {id:"LP001018",gender:"Male",dependents:"2",education:"Graduate",income:4006,loan:168,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001020",gender:"Male",dependents:"1",education:"Graduate",income:12841,loan:349,credit:1,property:"Semiurban",status:"N"},
+      {id:"LP001024",gender:"Male",dependents:"2",education:"Graduate",income:3200,loan:70,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001027",gender:"Male",dependents:"2",education:"Graduate",income:2500,loan:109,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001029",gender:"Male",dependents:"0",education:"Graduate",income:1853,loan:114,credit:1,property:"Rural",status:"N"},
+      {id:"LP001030",gender:"Male",dependents:"2",education:"Graduate",income:1299,loan:17,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001032",gender:"Male",dependents:"0",education:"Graduate",income:4950,loan:125,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001034",gender:"Male",dependents:"1",education:"Not Graduate",income:3596,loan:100,credit:0,property:"Urban",status:"N"},
+      {id:"LP001036",gender:"Female",dependents:"0",education:"Graduate",income:3510,loan:76,credit:0,property:"Urban",status:"N"},
+      {id:"LP001038",gender:"Male",dependents:"0",education:"Not Graduate",income:4887,loan:133,credit:1,property:"Rural",status:"N"},
+      {id:"LP001041",gender:"Male",dependents:"0",education:"Graduate",income:2600,loan:115,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001043",gender:"Male",dependents:"0",education:"Not Graduate",income:7660,loan:104,credit:0,property:"Urban",status:"N"},
+      {id:"LP001046",gender:"Male",dependents:"1",education:"Graduate",income:5955,loan:315,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001047",gender:"Male",dependents:"0",education:"Not Graduate",income:2600,loan:116,credit:0,property:"Semiurban",status:"N"},
+      {id:"LP001050",gender:"Male",dependents:"2",education:"Not Graduate",income:3365,loan:112,credit:0,property:"Rural",status:"N"},
+      {id:"LP001052",gender:"Male",dependents:"1",education:"Graduate",income:3717,loan:151,credit:1,property:"Semiurban",status:"Y"},
+      {id:"LP001066",gender:"Male",dependents:"0",education:"Graduate",income:9560,loan:191,credit:1,property:"Semiurban",status:"Y"},
+      {id:"LP001068",gender:"Male",dependents:"0",education:"Graduate",income:2799,loan:122,credit:1,property:"Semiurban",status:"Y"},
+      {id:"LP001073",gender:"Male",dependents:"2",education:"Not Graduate",income:4226,loan:110,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001086",gender:"Male",dependents:"0",education:"Not Graduate",income:1442,loan:35,credit:1,property:"Urban",status:"N"},
+      {id:"LP001087",gender:"Female",dependents:"2",education:"Graduate",income:3750,loan:120,credit:1,property:"Semiurban",status:"Y"},
+      {id:"LP001091",gender:"Male",dependents:"1",education:"Graduate",income:4166,loan:201,credit:0,property:"Urban",status:"N"},
+      {id:"LP001095",gender:"Male",dependents:"0",education:"Graduate",income:3167,loan:74,credit:1,property:"Urban",status:"N"},
+      {id:"LP001097",gender:"Male",dependents:"1",education:"Graduate",income:4692,loan:106,credit:1,property:"Rural",status:"N"},
+      {id:"LP001098",gender:"Male",dependents:"0",education:"Graduate",income:3500,loan:114,credit:1,property:"Semiurban",status:"Y"},
+      {id:"LP001100",gender:"Male",dependents:"3+",education:"Graduate",income:12500,loan:320,credit:1,property:"Rural",status:"N"},
+      {id:"LP001112",gender:"Female",dependents:"0",education:"Graduate",income:3667,loan:144,credit:1,property:"Semiurban",status:"Y"},
+      {id:"LP001116",gender:"Male",dependents:"0",education:"Not Graduate",income:3748,loan:110,credit:1,property:"Semiurban",status:"Y"},
+      {id:"LP001119",gender:"Male",dependents:"0",education:"Graduate",income:3600,loan:80,credit:1,property:"Urban",status:"N"},
+      {id:"LP001120",gender:"Male",dependents:"0",education:"Graduate",income:1800,loan:47,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001123",gender:"Male",dependents:"0",education:"Graduate",income:2400,loan:75,credit:1,property:"Urban",status:"Y"},
+      {id:"LP001131",gender:"Male",dependents:"0",education:"Graduate",income:3941,loan:134,credit:1,property:"Semiurban",status:"Y"}
+    ];
+
+    const filters = {
+      gender: document.getElementById("genderFilter"),
+      education: document.getElementById("educationFilter"),
+      property: document.getElementById("propertyFilter"),
+      credit: document.getElementById("creditFilter"),
+      status: document.getElementById("statusFilter")
+    };
+
+    function title(value) {
+      return String(value).replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function riskScore(row) {
+      let score = 0;
+      score += row.income < 3000 ? 3 : row.income < 6000 ? 2 : 1;
+      score += row.credit === 0 ? 4 : 1;
+      score += row.loan > 250 ? 3 : row.loan > 120 ? 2 : 1;
+      const deps = Number(String(row.dependents).replace("+", "")) || 0;
+      score += deps >= 3 ? 3 : deps >= 1 ? 2 : 1;
+      return score;
+    }
+
+    function riskCategory(row) {
+      const score = riskScore(row);
+      if (score <= 5) return "Low Risk";
+      if (score <= 9) return "Medium Risk";
+      return "High Risk";
+    }
+
+    function formatNumber(value) {
+      return Math.round(value).toLocaleString("en-US");
+    }
+
+    function formatPercent(value) {
+      return `${Math.round(value)}%`;
+    }
+
+    function uniqueValues(key) {
+      return [...new Set(loans.map(row => row[key]))].sort();
+    }
+
+    function fillSelect(select, values, formatter = value => value) {
+      select.innerHTML = `<option value="All">All</option>` + values
+        .map(value => `<option value="${value}">${formatter(value)}</option>`)
+        .join("");
+    }
+
+    function getFilteredRows() {
+      return loans.filter(row => {
+        return (filters.gender.value === "All" || row.gender === filters.gender.value)
+          && (filters.education.value === "All" || row.education === filters.education.value)
+          && (filters.property.value === "All" || row.property === filters.property.value)
+          && (filters.credit.value === "All" || String(row.credit) === filters.credit.value)
+          && (filters.status.value === "All" || row.status === filters.status.value);
+      });
+    }
+
+    function statusCounts(rows, key) {
+      const groups = {};
+      rows.forEach(row => {
+        const label = row[key];
+        if (!groups[label]) groups[label] = { approved: 0, rejected: 0, total: 0 };
+        if (row.status === "Y") groups[label].approved += 1;
+        if (row.status === "N") groups[label].rejected += 1;
+        groups[label].total += 1;
+      });
+      return groups;
+    }
+
+    function renderStackedChart(elementId, groups, labelFormatter = value => value) {
+      const element = document.getElementById(elementId);
+      const rows = Object.entries(groups);
+      if (!rows.length) {
+        element.innerHTML = "<p>No records match the selected filters.</p>";
+        return;
+      }
+      element.innerHTML = rows.map(([label, values]) => {
+        const approvedPct = values.total ? (values.approved / values.total) * 100 : 0;
+        const rejectedPct = values.total ? (values.rejected / values.total) * 100 : 0;
+        return `
+          <div class="bar-row">
+            <div>${labelFormatter(label)}</div>
+            <div class="bar-track" title="Approved ${values.approved}, Rejected ${values.rejected}">
+              <div class="approved" style="width:${approvedPct}%"></div>
+              <div class="rejected" style="width:${rejectedPct}%"></div>
+            </div>
+            <div>${values.total}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderSingleBarChart(elementId, groups) {
+      const element = document.getElementById(elementId);
+      const entries = Object.entries(groups);
+      const max = Math.max(...entries.map(([, value]) => value), 1);
+      element.innerHTML = entries.map(([label, value]) => `
+        <div class="bar-row">
+          <div>${label}</div>
+          <div class="bar-track">
+            <div class="single-bar" style="width:${(value / max) * 100}%"></div>
+          </div>
+          <div>${value}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById("recordTable");
+      tbody.innerHTML = rows.slice(0, 10).map(row => `
+        <tr>
+          <td>${row.id}</td>
+          <td>${row.gender}</td>
+          <td>${row.education}</td>
+          <td>${formatNumber(row.income)}</td>
+          <td>${row.loan}</td>
+          <td>${row.credit === 1 ? "Good" : "Poor"}</td>
+          <td>${row.status === "Y" ? "Approved" : "Rejected"}</td>
+          <td>${riskCategory(row)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function updateDashboard() {
+      const rows = getFilteredRows();
+      const total = rows.length;
+      const approved = rows.filter(row => row.status === "Y").length;
+      const rejected = rows.filter(row => row.status === "N").length;
+      const avgIncome = total ? rows.reduce((sum, row) => sum + row.income, 0) / total : 0;
+      const avgLoan = total ? rows.reduce((sum, row) => sum + row.loan, 0) / total : 0;
+
+      document.getElementById("totalApplicants").textContent = total;
+      document.getElementById("approvalRate").textContent = formatPercent(total ? (approved / total) * 100 : 0);
+      document.getElementById("rejectionRate").textContent = formatPercent(total ? (rejected / total) * 100 : 0);
+      document.getElementById("avgIncome").textContent = formatNumber(avgIncome);
+      document.getElementById("avgLoan").textContent = formatNumber(avgLoan);
+
+      renderStackedChart("creditChart", statusCounts(rows, "credit"), value => value === "1" ? "Good Credit" : "Poor Credit");
+      renderStackedChart("educationChart", statusCounts(rows, "education"));
+      renderStackedChart("propertyChart", statusCounts(rows, "property"));
+      renderStackedChart("genderChart", statusCounts(rows, "gender"));
+
+      const risks = {};
+      rows.forEach(row => {
+        const risk = riskCategory(row);
+        risks[risk] = (risks[risk] || 0) + 1;
+      });
+      renderSingleBarChart("riskChart", risks);
+
+      const loanGroups = {
+        Approved: Math.round(rows.filter(row => row.status === "Y").reduce((sum, row) => sum + row.loan, 0) / Math.max(approved, 1)),
+        Rejected: Math.round(rows.filter(row => row.status === "N").reduce((sum, row) => sum + row.loan, 0) / Math.max(rejected, 1))
+      };
+      renderSingleBarChart("loanAmountChart", loanGroups);
+      renderTable(rows);
+    }
+
+    fillSelect(filters.gender, uniqueValues("gender"));
+    fillSelect(filters.education, uniqueValues("education"));
+    fillSelect(filters.property, uniqueValues("property"));
+    fillSelect(filters.credit, uniqueValues("credit").map(String), value => value === "1" ? "Good Credit" : "Poor Credit");
+    fillSelect(filters.status, uniqueValues("status"), value => value === "Y" ? "Approved" : "Rejected");
+
+    Object.values(filters).forEach(select => {
+      select.addEventListener("change", updateDashboard);
+    });
+
+    updateDashboard();
+  </script>
+</body>
+</html>
+

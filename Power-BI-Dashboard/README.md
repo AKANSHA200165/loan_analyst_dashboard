@@ -28,3 +28,16 @@ Place Power BI files and dashboard-related assets here.
 ## Dashboard Design Guide
 
 Use `dashboard_design_guide.md` for a professional Power BI layout plan, KPI cards, chart recommendations, DAX measures, slicers, and formatting tips.
+
+## Working Browser Dashboard
+
+Open `loan_risk_dashboard.html` in any browser to view the working dashboard without Power BI login.
+
+The dashboard includes:
+
+- KPI cards
+- approval and rejection rates
+- credit history impact
+- education, property area, and gender analysis
+- risk category summary
+- interactive filters

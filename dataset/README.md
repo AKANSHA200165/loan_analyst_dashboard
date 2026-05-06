@@ -42,3 +42,9 @@ Default output:
 ```text
 dataset/cleaned/banking_loan_data_cleaned.csv
 ```
+
+## Included Sample Files
+
+- `raw/banking_loan_data.csv` - sample banking loan dataset
+- `cleaned/banking_loan_data_cleaned.csv` - cleaned sample dataset
+- `cleaned/banking_loan_data_with_risk_score.csv` - cleaned dataset with beginner-friendly risk categories

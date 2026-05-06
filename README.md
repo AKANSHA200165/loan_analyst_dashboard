@@ -45,6 +45,8 @@ Data preparation steps include:
 - Converted numeric and date fields where applicable
 - Exported a cleaned CSV for analysis and dashboarding
 
+This repository includes sample data, so the project can be opened and reviewed immediately.
+
 ## Project Structure
 
 ```text
@@ -58,6 +60,7 @@ Banking-Loan-Risk-Analysis/
 |   `-- README.md
 |-- Power-BI-Dashboard/
 |   |-- dashboard_design_guide.md
+|   |-- loan_risk_dashboard.html
 |   `-- README.md
 |-- reports/
 |   |-- business_insights.md
@@ -98,6 +101,10 @@ Banking-Loan-Risk-Analysis/
 ## Power BI Dashboard
 
 The dashboard is designed to give stakeholders a quick view of loan portfolio risk and approval trends.
+
+You can also open the working browser dashboard without Power BI:
+
+[Open Browser Dashboard](</Power-BI-Dashboard/loan_risk_dashboard.html>)
 
 Recommended dashboard sections:
 
